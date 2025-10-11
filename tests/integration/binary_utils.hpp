@@ -9,10 +9,15 @@ namespace lowembed::serialize::utils {
 // 检测字符串是否包含二进制特征（不可打印字符）
 bool isBinaryData(const std::string& data) {
     for (char c : data) {
-        // 检查是否为不可打印ASCII字符（0-31或127）
-        if (static_cast<unsigned char>(c) < 32 || static_cast<unsigned char>(c) == 127) {
-            return true;
+        unsigned char uc = static_cast<unsigned char>(c);
+        // 跳过常见的可打印字符和空白字符
+        if (std::isprint(uc) || // 可打印字符
+            uc == '\n' ||       // 换行
+            uc == '\r' ||       // 回车
+            uc == '\t') {       // 制表符
+            continue;
         }
+        return true;
     }
     return false;
 }

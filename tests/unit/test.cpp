@@ -2,10 +2,29 @@
 #include "../integration/binary_utils.hpp"
 #include <iostream>
 
+// 将整数以小端形式追加到字符串
+template<typename Int>
+void append_le(std::string &out, Int v) {
+    for (size_t i = 0; i < sizeof(Int); ++i) {
+        out.push_back(static_cast<char>((static_cast<uint64_t>(v) >> (8*i)) & 0xFF));
+    }
+}
+
 int main() {
     // 测试对象
     int testValue = 12345;
-    std::vector<int> testVec = {1, 2, 3, 4, 5};
+    //std::vector<int> testVec = {1, 2, 3, 4, 5};
+    std::string testVec = "Hello, World!6666666666666666666666";
+
+    // 目标字符串（你的例子）
+    std::string target = "World666";
+
+    // 手工构造二进制归档：先写长度（uint64_t 小端），再写数据 bytes
+    std::string handcrafted;
+    append_le<uint64_t>(handcrafted, static_cast<uint64_t>(target.size()));
+    handcrafted += "World679";
+    std::string originstr = lowembed::serialize::fromString<std::string>(handcrafted);
+    std::cout << "Origin string: " << originstr << "\n\n";
 
     // 二进制序列化
     lowembed::serialize::Serializer binarySer(lowembed::serialize::ArchiveType::Binary);
